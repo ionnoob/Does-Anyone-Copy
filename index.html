@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Does Anyone Copy?</title>
+<meta name="description" content="Co-op horror for 2 to 8 players on an offshore oil rig at night. Something down there has learned your voices.">
+<meta property="og:title" content="Does Anyone Copy?">
+<meta property="og:description" content="Co-op horror for 2 to 8 players on an offshore oil rig at night. Something down there has learned your voices.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📻</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;800;900&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ------------------------------------------------------------------
+   Set this only if the site is NOT on GitHub Pages (e.g. a custom domain).
+   On https://<you>.github.io/<repo>/ it finds the repo on its own.
+   ------------------------------------------------------------------ */
+</style>
+<script>
+  window.DAC_CONFIG = {
+    owner: "",          // your GitHub username, e.g. "goat"
+    repo: "",           // the repository name, e.g. "does-anyone-copy"
+    preferredAsset: ""  // optional: part of the file name to prefer, e.g. "Windows"
+  };
+</script>
+<style>
+:root {
+  color-scheme: dark;
+  --sea: #0b1a21;        /* the water at night */
+  --deck: #11252d;       /* raised surfaces */
+  --steel: #2a3f48;      /* lines and borders */
+  --tape: #e3e3d6;       /* reflective tape: main text */
+  --fog: #93a7ae;        /* secondary text */
+  --hivis: #ff6b1f;      /* the coverall: actions */
+  --hivis-dark: #d9520f;
+  --sodium: #f2a33a;     /* rig lamps: radio timestamps */
+  --led: #5be27f;        /* the walkie light */
+  --display: "Big Shoulders Display", "Arial Narrow", "Roboto Condensed", Impact, sans-serif;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --gutter: clamp(20px, 5vw, 64px);
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+*, *::before, *::after { box-sizing: inherit; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 72px); }
+body {
+  margin: 0;
+  background: var(--sea);
+  color: var(--tape);
+  font: 400 17px/1.6 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+/* film grain over everything, very faint */
+body::after {
+  content: "";
+  position: fixed; inset: 0;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  z-index: 50;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  background: rgba(11, 26, 33, 0.92); z-index: 40;
+}
+a { color: inherit; }
+img { max-width: 100%; display: block; }
+:focus-visible { outline: 2px solid var(--hivis); outline-offset: 3px; }
+
+.wrap { width: min(1180px, 100% - 2 * var(--gutter)); margin-inline: auto; }
+
+/* ---------------------------------------------------------------- top bar */
+.bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30;
+  background: rgba(11, 26, 33, 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--steel);
+}
+.bar .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+.wordmark { font: 800 22px/1 var(--display); letter-spacing: 0.01em; text-decoration: none; }
+.bar-link {
+  font: 600 15px/1 var(--sans); text-decoration: none;
+  padding: 10px 16px; border: 1px solid var(--hivis); color: var(--hivis);
+}
+.bar-link:hover { background: var(--hivis); color: var(--sea); }
+
+/* ---------------------------------------------------------------- hero */
+.hero { padding: clamp(48px, 9vw, 120px) 0 clamp(56px, 8vw, 104px); }
+.hero .wrap {
+  display: grid; gap: clamp(36px, 5vw, 72px);
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  align-items: center;
+}
+.title {
+  margin: 0;
+  font: 900 clamp(64px, 11.5vw, 168px)/0.84 var(--display);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+.title span { display: block; }
+.lede { margin: 28px 0 0; max-width: 34ch; font-size: clamp(18px, 1.6vw, 21px); color: var(--fog); }
+.lede strong { color: var(--tape); font-weight: 500; }
+.cta-row { margin-top: 36px; display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 12px;
+  background: var(--hivis); color: #160700;
+  font: 600 18px/1.2 var(--sans); text-decoration: none;
+  padding: 18px 26px;
+  border: 0; cursor: pointer;
+  box-shadow: 6px 6px 0 var(--steel);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+.btn:hover { background: #ff7d38; }
+.btn:active { transform: translate(3px, 3px); box-shadow: 3px 3px 0 var(--steel); }
+.btn[aria-disabled="true"] { background: var(--steel); color: var(--fog); box-shadow: none; cursor: default; }
+.btn svg { width: 20px; height: 20px; flex: none; }
+.build-meta { font: 400 14px/1.5 var(--mono); color: var(--fog); }
+
+/* the walkie display: the one loud thing on the page */
+.radio {
+  margin: 0;
+  position: relative;
+  background: #071116;
+  border: 1px solid var(--steel);
+  padding: 18px 20px 22px;
+  min-height: 380px;
+  font: 400 15px/1.55 var(--mono);
+  overflow: hidden;
+}
+.radio::after { /* scanlines */
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.025) 0 1px, transparent 1px 3px);
+}
+.radio-head {
+  display: flex; justify-content: space-between; align-items: center;
+  color: var(--fog); font-size: 13px;
+  padding-bottom: 12px; margin-bottom: 14px; border-bottom: 1px dashed var(--steel);
+}
+.live { display: inline-flex; align-items: center; gap: 8px; }
+.live i { width: 8px; height: 8px; border-radius: 50%; background: var(--led); box-shadow: 0 0 10px var(--led); }
+.log { margin: 0; padding: 0; list-style: none; }
+.log li { margin: 0 0 10px; min-height: 1.55em; }
+.log time { color: var(--sodium); margin-right: 10px; }
+.log b { font-weight: 500; color: var(--tape); }
+.log .said { color: #c9d4d2; }
+.log .static { color: var(--fog); letter-spacing: 0.08em; }
+.log .wrong .said { color: var(--tape); }
+.log .final b, .log .final .said { color: var(--hivis); }
+.caret { display: inline-block; width: 0.6em; height: 1.05em; vertical-align: -0.15em; background: var(--sodium); animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.radio-foot { position: absolute; left: 20px; right: 20px; bottom: 14px; display: flex; justify-content: flex-end; }
+.replay { background: none; border: 0; color: var(--fog); font: 400 13px/1 var(--mono); cursor: pointer; padding: 6px 0; text-decoration: underline; text-underline-offset: 3px; }
+.replay:hover { color: var(--tape); }
+
+/* reflective tape divider */
+.tape { height: 16px; background: repeating-linear-gradient(-45deg, var(--hivis) 0 26px, var(--tape) 26px 52px); opacity: 0.9; }
+
+/* ---------------------------------------------------------------- sections */
+section { padding: clamp(64px, 9vw, 120px) 0; }
+h2 {
+  margin: 0 0 clamp(32px, 4vw, 52px);
+  font: 800 clamp(40px, 6vw, 76px)/0.95 var(--display);
+  max-width: 16ch; text-wrap: balance;
+}
+.plays { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--steel); }
+.play { padding: 30px 32px 34px 0; border-bottom: 1px solid var(--steel); }
+.play:nth-child(odd) { border-right: 1px solid var(--steel); }
+.play:nth-child(even) { padding-left: 32px; padding-right: 0; }
+.play h3 { margin: 0 0 10px; font: 800 30px/1.05 var(--display); }
+.play p { margin: 0; max-width: 46ch; color: var(--fog); }
+
+.shots { display: none; }
+.shots.has { display: block; }
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 14px; }
+.gallery img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border: 1px solid var(--steel); background: var(--deck); }
+
+/* ---------------------------------------------------------------- download */
+.download { background: var(--deck); border-top: 1px solid var(--steel); }
+.dl-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(36px, 6vw, 88px); }
+.version { font: 900 clamp(64px, 9vw, 120px)/0.85 var(--display); margin: 0 0 14px; }
+.version-sub { margin: 0 0 30px; font: 400 15px/1.6 var(--mono); color: var(--fog); }
+.notes h3, .req h3 { margin: 0 0 14px; font: 800 26px/1.1 var(--display); }
+.notes-body { color: var(--fog); max-width: 60ch; }
+.notes-body ul { margin: 0 0 14px; padding-left: 20px; }
+.notes-body li { margin-bottom: 6px; }
+.notes-body h4 { margin: 18px 0 8px; color: var(--tape); font: 600 16px/1.3 var(--sans); }
+.notes-body p { margin: 0 0 12px; }
+.older { display: inline-block; margin-top: 18px; color: var(--fog); font-size: 15px; text-underline-offset: 3px; }
+.older:hover { color: var(--tape); }
+
+.req { margin-top: clamp(48px, 6vw, 72px); padding-top: clamp(36px, 5vw, 52px); border-top: 1px solid var(--steel); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+.req ol, .req ul { margin: 0; padding-left: 20px; color: var(--fog); }
+.req li { margin-bottom: 8px; }
+.req li::marker { color: var(--sodium); }
+.req p { margin: 0; color: var(--fog); max-width: 38ch; }
+
+footer { padding: 36px 0 48px; color: var(--fog); font-size: 14px; border-top: 1px solid var(--steel); }
+footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+/* one orchestrated moment: the title tunes in */
+@keyframes tune {
+  0% { opacity: 0; filter: blur(6px); transform: translateX(-6px); }
+  30% { opacity: 0.8; filter: blur(0); transform: translateX(3px); text-shadow: -3px 0 var(--hivis), 3px 0 #2fb3c4; }
+  45% { opacity: 0.35; }
+  60% { opacity: 1; transform: none; text-shadow: none; }
+  100% { opacity: 1; }
+}
+.title { animation: tune 1.1s ease-out both; }
+
+@media (max-width: 900px) {
+  .hero .wrap, .dl-grid { grid-template-columns: 1fr; }
+  .radio { min-height: 0; }
+  .plays { grid-template-columns: 1fr; }
+  .play, .play:nth-child(even) { padding: 26px 0 30px; border-right: 0; }
+  .req { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .title { animation: none; }
+  .caret { animation: none; }
+  .btn { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="wordmark" href="#top">Does Anyone Copy?</a>
+    <a class="bar-link" href="#download">Download</a>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero">
+    <div class="wrap">
+      <div>
+        <h1 class="title"><span>Does</span><span>anyone</span><span>copy?</span></h1>
+        <p class="lede"><strong>Co-op horror for 2 to 8 players on an offshore oil rig at night.</strong> Keep the rig running until the dawn helicopter. Something down there has learned your voices.</p>
+        <div class="cta-row">
+          <a class="btn dl-btn" href="#download" aria-disabled="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" aria-hidden="true"><path d="M12 3v12M6.5 9.5 12 15l5.5-5.5M4 20h16"/></svg>
+            <span class="dl-label">Checking for the latest build…</span>
+          </a>
+          <span class="build-meta dl-meta"></span>
+        </div>
+      </div>
+
+      <figure class="radio" aria-label="Radio transcript">
+        <div class="radio-head">
+          <span>Channel 4</span>
+          <span class="live"><i></i>Receiving</span>
+        </div>
+        <ol class="log" id="log"></ol>
+        <div class="radio-foot"><button class="replay" id="replay" type="button" hidden>Replay transmission</button></div>
+      </figure>
+    </div>
+  </div>
+
+  <div class="tape" role="presentation"></div>
+
+  <section id="how">
+    <div class="wrap">
+      <h2>Five nights. Nobody is coming until dawn.</h2>
+      <div class="plays">
+        <article class="play">
+          <h3>Split up to keep it running</h3>
+          <p>Generators, pumps, the comms mast, the helipad lights. The jobs are spread across the whole rig, so the crew can't stay together for long.</p>
+        </article>
+        <article class="play">
+          <h3>Don't trust the radio</h3>
+          <p>Your walkie is the only link to the others, and it replays your crew's real voices from earlier in the night. You can't always tell who is talking.</p>
+        </article>
+        <article class="play">
+          <h3>Count heads, then count again</h3>
+          <p>Fall a few steps behind and you'll wake up somewhere else, alone, without your radio. The one walking with your friends now isn't you.</p>
+        </article>
+        <article class="play">
+          <h3>Nobody sees the same thing</h3>
+          <p>Each player's screen can show things the others don't. The only way to almost see it is the old Polaroid, and the photos are never clear.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="shots" id="shots" aria-label="Screenshots">
+    <div class="wrap">
+      <h2>From the rig</h2>
+      <div class="gallery" id="gallery"></div>
+    </div>
+  </section>
+
+  <section class="download" id="download">
+    <div class="wrap">
+      <div class="dl-grid">
+        <div>
+          <p class="version" id="version">…</p>
+          <p class="version-sub" id="version-sub">Looking up the latest build.</p>
+          <a class="btn dl-btn" href="#download" aria-disabled="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" aria-hidden="true"><path d="M12 3v12M6.5 9.5 12 15l5.5-5.5M4 20h16"/></svg>
+            <span class="dl-label">Checking for the latest build…</span>
+          </a>
+          <br>
+          <a class="older" id="older" href="#" hidden>Older builds</a>
+        </div>
+        <div class="notes">
+          <h3>What's new</h3>
+          <div class="notes-body" id="notes"><p>Patch notes appear here with each build.</p></div>
+        </div>
+      </div>
+
+      <div class="req">
+        <div>
+          <h3>Install</h3>
+          <ol>
+            <li>Download the zip and unzip it anywhere.</li>
+            <li>Run the game's .exe inside the folder.</li>
+            <li>If Windows SmartScreen warns you, choose More info, then Run anyway.</li>
+          </ol>
+        </div>
+        <div>
+          <h3>You'll need</h3>
+          <ul>
+            <li>Windows 10 or 11, 64-bit</li>
+            <li>At least one friend (2 to 8 players)</li>
+            <li>A microphone and headphones</li>
+          </ul>
+        </div>
+        <div>
+          <h3>About your voice</h3>
+          <p>Voice chat is recorded during a session so the creature can replay it. Recordings stay in that session and aren't kept afterwards.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Does Anyone Copy? is in development. Expect rough edges.</span>
+    <a href="#top">Back to top</a>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ------------------------------------------------------------ radio transcript */
+  const LINES = [
+    { t: "02:11", who: "PELL", say: "Generator's back up. Heading to the pump room." },
+    { t: "02:11", who: "MARA", say: "Copy. Jonah, you still with me on the stairs?" },
+    { t: "02:12", who: "JONAH", say: "Right behind you." },
+    { t: "02:12", who: "MARA", say: "Pell, did you just call me?" },
+    { t: "02:13", who: "PELL", say: "No. I haven't keyed in since the generator." },
+    { t: "02:13", who: "JONAH", say: "Right behind you.", cls: "wrong" },
+    { static: true },
+    { t: "02:14", who: "MARA", say: "Jonah? Does anyone copy?", cls: "final" },
+  ];
+  const log = document.getElementById("log");
+  const replay = document.getElementById("replay");
+  let runId = 0;
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+
+  function lineEl(l) {
+    const li = document.createElement("li");
+    if (l.cls) li.className = l.cls;
+    if (l.static) { li.innerHTML = '<span class="static"></span>'; return li; }
+    li.innerHTML = `<time>${l.t}</time><b>${l.who}:</b> <span class="said"></span>`;
+    return li;
+  }
+
+  async function play() {
+    const id = ++runId;
+    log.innerHTML = "";
+    replay.hidden = true;
+    if (reduce) {
+      for (const l of LINES) {
+        const li = lineEl(l);
+        li.querySelector(".said, .static").textContent = l.static ? "░▒▓▒░░▒ ▒▓░" : l.say;
+        log.appendChild(li);
+      }
+      replay.hidden = true;
+      return;
+    }
+    await wait(900);
+    for (const l of LINES) {
+      if (id !== runId) return;
+      const li = lineEl(l);
+      log.appendChild(li);
+      const target = li.querySelector(".said, .static");
+      const caret = document.createElement("span");
+      caret.className = "caret";
+      target.after(caret);
+      if (l.static) {
+        for (let i = 0; i < 14; i++) {
+          target.textContent = Array.from({ length: 12 }, () => "░▒▓ "[Math.floor(Math.random() * 4)]).join("");
+          await wait(55);
+        }
+      } else {
+        for (const ch of l.say) {
+          if (id !== runId) return;
+          target.textContent += ch;
+          await wait(ch === "." || ch === "?" || ch === "," ? 160 : 26 + Math.random() * 22);
+        }
+      }
+      caret.remove();
+      await wait(l.cls === "wrong" ? 1400 : 620);
+    }
+    const last = log.lastElementChild;
+    if (last) { const c = document.createElement("span"); c.className = "caret"; last.appendChild(c); }
+    replay.hidden = false;
+  }
+  replay.addEventListener("click", play);
+  play();
+
+  /* ------------------------------------------------------------ latest build from GitHub Releases */
+  const cfg = window.DAC_CONFIG || {};
+  function findRepo() {
+    if (cfg.owner && cfg.repo) return { owner: cfg.owner, repo: cfg.repo };
+    const host = location.hostname;
+    if (host.endsWith(".github.io")) {
+      const owner = host.split(".")[0];
+      const first = location.pathname.split("/").filter(Boolean)[0];
+      return { owner, repo: first || `${owner}.github.io` };
+    }
+    return null;
+  }
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const size = b => b >= 1e9 ? (b / 1e9).toFixed(2) + " GB" : Math.max(1, Math.round(b / 1e6)) + " MB";
+  const date = s => new Date(s).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
+
+  function renderNotes(md) {
+    if (!md || !md.trim()) return "<p>No patch notes for this build.</p>";
+    const inline = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/`(.+?)`/g, "<code>$1</code>");
+    let html = "", list = false;
+    for (const raw of md.replace(/\r/g, "").split("\n")) {
+      const line = raw.trim();
+      const item = line.match(/^[-*]\s+(.*)/);
+      if (item) { if (!list) { html += "<ul>"; list = true; } html += `<li>${inline(item[1])}</li>`; continue; }
+      if (list) { html += "</ul>"; list = false; }
+      if (!line) continue;
+      const head = line.match(/^#{1,6}\s+(.*)/);
+      html += head ? `<h4>${inline(head[1])}</h4>` : `<p>${inline(line)}</p>`;
+    }
+    if (list) html += "</ul>";
+    return html;
+  }
+
+  function pickAsset(assets) {
+    if (!assets || !assets.length) return null;
+    if (cfg.preferredAsset) {
+      const hit = assets.find(a => a.name.toLowerCase().includes(cfg.preferredAsset.toLowerCase()));
+      if (hit) return hit;
+    }
+    const builds = assets.filter(a => /\.(zip|7z|rar|exe|msi)$/i.test(a.name));
+    return (builds.length ? builds : assets).sort((a, b) => b.size - a.size)[0];
+  }
+
+  function setButtons(href, label, enabled) {
+    document.querySelectorAll(".dl-btn").forEach(btn => {
+      btn.href = href;
+      btn.setAttribute("aria-disabled", enabled ? "false" : "true");
+      btn.querySelector(".dl-label").textContent = label;
+    });
+  }
+
+  async function loadBuild() {
+    const repo = findRepo();
+    const vEl = document.getElementById("version"), sub = document.getElementById("version-sub");
+    const meta = document.querySelector(".dl-meta"), notes = document.getElementById("notes"), older = document.getElementById("older");
+    if (!repo) {
+      vEl.textContent = "Soon";
+      sub.textContent = "The download link isn't set up yet. Add the GitHub repository in DAC_CONFIG at the top of index.html.";
+      setButtons("#download", "Download not available yet", false);
+      return;
+    }
+    const releases = `https://github.com/${repo.owner}/${repo.repo}/releases`;
+    older.href = releases; older.hidden = false;
+    try {
+      const res = await fetch(`https://api.github.com/repos/${repo.owner}/${repo.repo}/releases/latest`, { headers: { Accept: "application/vnd.github+json" } });
+      if (res.status === 404) throw new Error("none");
+      if (!res.ok) throw new Error("http " + res.status);
+      const rel = await res.json();
+      const asset = pickAsset(rel.assets);
+      const version = rel.tag_name || rel.name || "Latest";
+      vEl.textContent = version;
+      const bits = [`Released ${date(rel.published_at)}`];
+      if (asset) bits.push(size(asset.size));
+      const downloads = (rel.assets || []).reduce((n, a) => n + (a.download_count || 0), 0);
+      if (downloads > 0) bits.push(`downloaded ${downloads.toLocaleString()} times`);
+      sub.textContent = bits.join(", ");
+      notes.innerHTML = renderNotes(rel.body);
+      if (asset) {
+        setButtons(asset.browser_download_url, `Download ${version} for Windows`, true);
+        meta.textContent = `${size(asset.size)}, ${date(rel.published_at)}`;
+      } else {
+        setButtons(rel.html_url, "Open the download page", true);
+        meta.textContent = "";
+      }
+    } catch (e) {
+      if (e.message === "none") {
+        vEl.textContent = "Soon";
+        sub.textContent = "No build has been released yet.";
+        setButtons(releases, "See releases", true);
+      } else {
+        vEl.textContent = "Latest";
+        sub.textContent = "Couldn't read the build details right now. The button still opens the newest release.";
+        setButtons(`${releases}/latest`, "Open the latest release", true);
+      }
+    }
+  }
+  loadBuild();
+
+  /* ------------------------------------------------------------ optional screenshots: screenshots/1.jpg … 8.jpg */
+  const gallery = document.getElementById("gallery");
+  const shots = document.getElementById("shots");
+  let found = 0;
+  for (let i = 1; i <= 8; i++) {
+    for (const ext of ["jpg", "png"]) {
+      const img = new Image();
+      img.alt = `Screenshot ${i}`;
+      img.loading = "lazy";
+      img.onload = () => {
+        if (gallery.querySelector(`[data-n="${i}"]`)) return;
+        img.dataset.n = i;
+        const after = [...gallery.children].find(c => +c.dataset.n > i);
+        gallery.insertBefore(img, after || null);
+        if (++found) shots.classList.add("has");
+      };
+      img.src = `screenshots/${i}.${ext}`;
+    }
+  }
+})();
+</script>
+</body>
+</html>
